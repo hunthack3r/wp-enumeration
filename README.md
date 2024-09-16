@@ -28,12 +28,12 @@
 🚀 Usage
 Run the script in your terminal:
 
-```bash
+```python
 ./wp-enumeration.sh
 ```
 You will be prompted to enter the website URL:
 
-```plaintext
+```python
 
 -------------------------------------
  WordPress User Enumeration Tool
