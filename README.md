@@ -1,4 +1,4 @@
-# 🚀 WordPress User Enumeration Tool
+# 🚀 WordPress BEST User Enumeration Tool
 
 🔍 A simple and efficient Bash script for enumerating WordPress users using the WordPress REST API. This tool fetches the usernames (`slug` values) from a given WordPress site's `/wp-json/wp/v2/users` endpoint and displays them in a colorful format in the terminal.
 
