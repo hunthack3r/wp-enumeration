@@ -32,10 +32,10 @@ Run the script in your terminal:
 ./wp-enumeration.sh
 ```
 OR 
-```
+```bash
 echo domain.com | ./wp-enumeration.sh
 ```
-```
+```bash
 echo all_urls.txt | ./wp-enumeration.sh
 ```
 You will be prompted to enter the website URL:
