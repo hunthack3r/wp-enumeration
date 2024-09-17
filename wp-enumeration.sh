@@ -10,29 +10,49 @@ NC='\033[0m' # No Color
 # Renkli Banner
 echo -e "${CYAN}-------------------------------------"
 echo -e " WordPress User Enumeration Tool"
-echo -e "      Akif-SAYIN / DedCrowd"
 echo -e "-------------------------------------${NC}"
 
-# Kullanıcıdan site adresi iste
-echo -ne "${YELLOW}Website (e.g., example.com): ${NC}"
-read -r site
+# Giriş bilgisini stdin'den oku
+read -r input
 
-# Tam URL'yi oluştur
-url="$site/wp-json/wp/v2/users"
+# Eğer bir dosya verilmişse
+if [ -f "$input" ]; then
+    # Dosya içindeki her bir domain için işlemi gerçekleştir
+    while IFS= read -r site; do
+        url="$site/wp-json/wp/v2/users"
+        echo -e "${CYAN}Enumerating users at $url ...${NC}"
+        response=$(curl -sL "$url")
 
-# Kullanıcıları bulmak için istekte bulun
-echo -e "${CYAN}Enumerating users at $url ...${NC}"
-response=$(curl -sL "$url")
+        # Yanıt boş mu kontrol et
+        if [ -z "$response" ]; then
+            echo -e "${RED}No response received for $site. The site might be blocking the request or the URL is incorrect.${NC}"
+            continue
+        fi
 
-# Yanıt boş mu kontrol et
-if [ -z "$response" ]; then
-  echo -e "${RED}No response received. The site might be blocking the request or the URL is incorrect.${NC}"
-  exit 1
+        # 'name' ve 'slug' etiketlerinin değerlerini bul ve göster
+        echo -e "${GREEN}Found users for $site:${NC}"
+        echo "$response" | grep -oP '"name":"[^"]*"|"slug":"[^"]*"' | sed -E 'N;s/"name":"([^"]*)".*"slug":"([^"]*)"/Name: \1 - Username: \2/' | while read -r user; do
+            echo -e "${GREEN}- ${user}${NC}"
+        done
+
+    done < "$input"
+else
+    # Tek bir site için işlemi gerçekleştir
+    site="$input"
+    url="$site/wp-json/wp/v2/users"
+
+    echo -e "${CYAN}Enumerating users at $url ...${NC}"
+    response=$(curl -sL "$url")
+
+    # Yanıt boş mu kontrol et
+    if [ -z "$response" ]; then
+        echo -e "${RED}No response received. The site might be blocking the request or the URL is incorrect.${NC}"
+        exit 1
+    fi
+
+    # 'name' ve 'slug' etiketlerinin değerlerini bul ve göster
+    echo -e "${GREEN}Found users:${NC}"
+    echo "$response" | grep -oP '"name":"[^"]*"|"slug":"[^"]*"' | sed -E 'N;s/"name":"([^"]*)".*"slug":"([^"]*)"/Name: \1 - Username: \2/' | while read -r user; do
+        echo -e "${GREEN}- ${user}${NC}"
+    done
 fi
-
-# 'slug' etiketinin değerlerini bul ve göster
-echo -e "${GREEN}Found users:${NC}"
-echo "$response" | grep -o '"slug":"[^"]*"' | sed 's/"slug":"\([^"]*\)"/\1/' | while read -r user; do
-    echo -e "${GREEN}- ${user}${NC}"
-done
-
