@@ -28,8 +28,15 @@
 🚀 Usage
 Run the script in your terminal:
 
-```python
+```bash
 ./wp-enumeration.sh
+```
+OR 
+```
+echo domain.com | ./wp-enumeration.sh
+```
+```
+echo all_urls.txt | ./wp-enumeration.sh
 ```
 You will be prompted to enter the website URL:
 
